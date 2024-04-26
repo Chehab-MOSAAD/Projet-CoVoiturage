@@ -342,7 +342,17 @@ CREATE TABLE Voir(
 INSERT INTO LaDate (Jour, Mois, Annee)
 VALUES
 (1, 1, 1990),
-(2, 2, 1992);
+(2, 2, 1992),
+(1, 1, 2020),
+(15, 5, 2021),
+(23, 8, 2021),
+(5, 12, 2021),
+(1, 1, 2022),
+(22, 3, 2022),
+(30, 6, 2022),
+(15, 11, 2022),
+(10, 2, 2023),
+(25, 7, 2023);
  
 
 INSERT INTO Utilisateur (IdUtilisateur, Mail, MotDePasse, Nom, Prenom, Sexe, Tel, Handicap, NotePassager, LangueParle1, LangueParle2, Fumeur, Jour, Mois, Annee)
@@ -362,4 +372,52 @@ INSERT INTO Voiture (Matricule, Marque, Modele, Type, NbrPlace, Carburant, Coule
 
 INSERT INTO Trajet (IdTrajet, VilleDepart, CodePostalDepart, NomRueDepart, NumRueDepart, VilleArrivee, CodePostalArrivee, NomRueArrivee, NumRueArrivee, CommentaireTrajetConducteur, PlaceDispo, Matricule, NumPermis) VALUES
 (801, 'Paris', '75001', 'Rue de Rivoli', 58, 'Lyon', '69002', 'Rue de la Republique', 1, 'Départ matinal, covoiturage convivial', 3, 'AB123CD', 'PERMIS123'),
-(802, 'Marseille', '13002', 'Quai du Port', 17, 'Nice', '06000', 'Ave Jean Medecin', 2, 'Préférence non-fumeur, déplacement professionnel', 2, 'EF456GH', 'PERMIS456')
+(802, 'Marseille', '13002', 'Quai du Port', 17, 'Nice', '06000', 'Ave Jean Medecin', 2, 'Préférence non-fumeur, déplacement professionnel', 2, 'EF456GH', 'PERMIS456');
+
+
+INSERT INTO Reservation (IdRes, Status, NumPermis, IdTrajet) VALUES
+(901, 'Confirmed', 'PERMIS123', 801),
+(902, 'Not_Confirmed', 'PERMIS456', 802);
+
+INSERT INTO Reserver (IdUtilisateur, IdRes) VALUES
+(302, 901),
+(303, 902);
+
+INSERT INTO CommenterReservation (IdRes, IdUtilisateur, CommentairePassager, NoteTrajet) VALUES
+(901, 302, 'La conduite était un peu rapide à mon goût.', 3),
+(902, 303, 'Conducteur sympathique et voiture confortable.', 4);
+
+INSERT INTO Calendrier (HeureDepart) VALUES
+('08:00:00'),
+('08:30:00'),
+('09:00:00'),
+('09:30:00'),
+('10:00:00'),
+('10:30:00'),
+('11:00:00'),
+('11:30:00'),
+('12:00:00'),
+('12:30:00'),
+('13:00:00'),
+('13:30:00'),
+('14:00:00'),
+('14:30:00'),
+('15:00:00');
+
+
+INSERT INTO Jour (JourDepart, JourArrivee, Semaine) VALUES
+(1, 2, 1),  
+(3, 4, 10);
+
+INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, HeureArrivee) VALUES
+(801, 1, 2, 1, '08:00:00', '10:00:00'),
+(802, 3, 4, 10, '09:00:00', '11:00:00');
+
+
+INSERT INTO Messagerie (IdSession, Message) VALUES
+(901, 'Hello, je suis arrivé.'),
+(902, 'Bonjour, je serai là dans 2 minutes');
+
+INSERT INTO Envoyer (IdSession, IdUtilisateur, Jour, Mois, Annee) VALUES
+(901, 302, 25, 7, 2023),
+(902, 303, 10, 2, 2023);
