@@ -295,3 +295,47 @@ CREATE TABLE Voir(
    FOREIGN KEY(IdUtilisateur) REFERENCES Utilisateur(IdUtilisateur),
    FOREIGN KEY(IdHistorique) REFERENCES Historique(IdHistorique)
 );
+
+"""Insertion"""
+
+INSERT INTO Utilisateur (IdUtilisateur, Mail, MotDePasse, Nom, Prenom, NotePassager, Tel, Sexe, Langue1, Langue2, Handicap, Fumeur)
+VALUES
+(302, 'marieChimie@gmail.com', 'mARie66:', 'Curie', 'Marie', 4, '06368945', 'F', 'Russe', 'Anglais', FALSE, FALSE),
+(303, 'nizarslamas@gmail.com', 'Nizar7!', 'Slama', 'Nizar', 5, '04875210', 'M', 'Arabe', 'Italien', FALSE, FALSE);
+
+-- Insertion dans la table Rechercher
+INSERT INTO Rechercher (IdUtilisateur, IdTemp, IDTrajet) VALUES
+(901, 101, 801),
+(902, 103, 802),
+(903, 107, 803);
+
+-- Insertion dans la table Depart
+INSERT INTO Depart (IdTrajet, JourDepart, JourArrivee, Semaine) VALUES
+(901, 10, 10, 15),
+(902, 22, 23, 20),
+(903, 18, 19, 8);
+
+-- Insertion dans la table CommenterReservation
+INSERT INTO CommenterReservation (IdReservation, IdUtilisateur, CommentairePassager, NoteTrajet) VALUES
+(901, 305, 'La conduite était un peu rapide à mon goût.', 3),
+(956, 322, 'Conducteur sympathique et voiture confortable.', 4),
+(906, 365, 'Le trajet était confortable, merci.', 5);
+
+-- Insertion dans la table Envoyer
+INSERT INTO Envoyer (IdUtilisateur, IdSession, Jour, Mois, Annee) VALUES
+(358, 901, 10, 10, 15),
+(399, 902, 22, 23, 20),
+(321, 903, 18, 19, 8);
+
+INSERT INTO Trajet (IdTrajet, VilleDepart, CodePostalDepart, NomRueDepart, NumRueDepart, VilleArrivee, CodePostalArrivee, NomRueArrivee, CommentaireTrajetConducteur, PlaceDispo)
+VALUES
+(801, 'Paris', '75001', 'Rue de Rivoli', 58, 'Lyon', '69002', 'Rue de la Republique', 'Départ matinal, covoiturage convivial', 3),
+(802, 'Marseille', '13002', 'Quai du Port', 17, 'Nice', '06000', 'Ave Jean Medecin', 'Préférence non-fumeur, déplacement professionnel', 2),
+(803, 'Lille', '59000', 'Rue de Paris', 22, 'Bordeaux', '33000', 'Ave Jean Medecin', 'Escale possible à Tours, pas d''animaux', 4);
+
+INSERT INTO Voiture (Matricule, Marque, Modele, Type, Couleur, NbrPlace, Carburant, IdConducteur) VALUES
+('AB123CD', 'Renault', 'Clio', 'Berline', 'Rouge', 5, 'Essence', (SELECT IdConducteur FROM Conducteur WHERE ... condition pour sélectionner le bon conducteur ...)),
+('EF456GH', 'Peugeot', '208', 'Compacte', 'Silver', 4, 'Diesel', (SELECT IdConducteur FROM Conducteur WHERE ... condition pour sélectionner le bon conducteur ...)),
+('IJ789KL', 'Citroen', 'C3', 'SUV', 'Aluminum', 6, 'Hybride', (SELECT IdConducteur FROM Conducteur WHERE ... condition pour sélectionner le bon conducteur ...));
+
+
