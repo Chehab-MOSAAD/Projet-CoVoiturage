@@ -448,3 +448,6 @@ INSERT INTO Trajet (IdTrajet, VilleDepart, CodePostalDepart, NomRueDepart, NumRu
 (804, 'Marseille', '13000', 'Quai de Daurade', 17, 'Nice', '06000', 'Saint Michel', 2, 'Préférence non-fumeur, déplacement professionnel', 2, 'EF896GH', 'PERMIS000');
 
 
+INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, HeureArrivee) VALUES
+(803, 1, 2, 1, '08:00:00', '12:00:00'),
+(804, 3, 4, 10, '09:00:00', '11:00:00');
