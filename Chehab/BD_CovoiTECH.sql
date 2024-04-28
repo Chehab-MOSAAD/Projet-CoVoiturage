@@ -442,3 +442,9 @@ INSERT INTO Voiture (Matricule, Marque, Modele, Type, NbrPlace, Carburant, Coule
 ('AB456CD', 'Audi', 'Clio', 'Berline', 4, 'essence', 'rouge', 'PERMIS789'),
 ('EF896GH', 'Peugeot', '208', 'Compacte', 2, 'essence', 'bleu', 'PERMIS000');
 
+
+INSERT INTO Trajet (IdTrajet, VilleDepart, CodePostalDepart, NomRueDepart, NumRueDepart, VilleArrivee, CodePostalArrivee, NomRueArrivee, NumRueArrivee, CommentaireTrajetConducteur, PlaceDispo, Matricule, NumPermis) VALUES
+(803, 'Paris', '75000', 'Rue de Catherine', 58, 'Lyon', '69000', 'Rue de Jules', 1, 'Départ matinal, covoiturage convivial', 3, 'AB456CD', 'PERMIS789'),
+(804, 'Marseille', '13000', 'Quai de Daurade', 17, 'Nice', '06000', 'Saint Michel', 2, 'Préférence non-fumeur, déplacement professionnel', 2, 'EF896GH', 'PERMIS000');
+
+
