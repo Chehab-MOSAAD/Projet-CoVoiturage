@@ -421,3 +421,24 @@ INSERT INTO Messagerie (IdSession, Message) VALUES
 INSERT INTO Envoyer (IdSession, IdUtilisateur, Jour, Mois, Annee) VALUES
 (901, 302, 25, 7, 2023),
 (902, 303, 10, 2, 2023);
+
+INSERT INTO LaDate (Jour, Mois, Annee)
+VALUES
+(1, 1, 2000),
+(24, 2, 2001);
+ 
+ 
+INSERT INTO Utilisateur (IdUtilisateur, Mail, MotDePasse, Nom, Prenom, Sexe, Tel, Handicap, NotePassager, LangueParle1, LangueParle2, Fumeur, Jour, Mois, Annee)
+VALUES
+(304, 'melanie@gmail.com', 'Melanie6@6', 'melanie', 'schmitt', 'F', '06558945', TRUE, 3, 'Russe', 'Anglais', FALSE, 1, 1, 2000),
+(305, 'lina777@gmail.com', 'Lina7!', 'Lina', 'dupont', 'F', '04875255', FALSE, 5, 'Francais', 'Italien', FALSE, 24, 2, 2001);
+
+
+INSERT INTO Conducteur (NumPermis, Points, NoteConducteur, IdUtilisateur) VALUES
+('PERMIS789', 3, 4.8, 304), 
+('PERMIS000', 15, 3, 305); 
+
+INSERT INTO Voiture (Matricule, Marque, Modele, Type, NbrPlace, Carburant, Couleur, NumPermis) VALUES
+('AB456CD', 'Audi', 'Clio', 'Berline', 4, 'essence', 'rouge', 'PERMIS789'),
+('EF896GH', 'Peugeot', '208', 'Compacte', 2, 'essence', 'bleu', 'PERMIS000');
+
