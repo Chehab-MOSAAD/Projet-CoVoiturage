@@ -412,7 +412,8 @@ INSERT INTO Jour (JourDepart, JourArrivee, Semaine) VALUES
 INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, HeureArrivee) VALUES
 (801, 1, 2, 1, '08:00:00', '10:00:00'),
 (802, 3, 4, 10, '09:00:00', '11:00:00');
-
+-- id 801 (Paris->Lyon) jour 1 sem 1 donc 01/01/2024--
+-- id 802 (Marseille->Nice) jour 3 semaine 10 donc 06/03/2024--
 
 INSERT INTO Messagerie (IdSession, Message) VALUES
 (901, 'Hello, je suis arrivé.'),
@@ -451,3 +452,6 @@ INSERT INTO Trajet (IdTrajet, VilleDepart, CodePostalDepart, NomRueDepart, NumRu
 INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, HeureArrivee) VALUES
 (803, 1, 2, 1, '08:00:00', '12:00:00'),
 (804, 3, 4, 10, '09:00:00', '11:00:00');
+-- id 803 (Paris->Lyon) jour 1 sem 1 donc 01/01/2024--
+-- id 804 (Marseille->Nice) jour 3 semaine 10 donc 06/03/2024--
+
