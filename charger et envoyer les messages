@@ -1,0 +1,10 @@
+<?php
+$pdo = new PDO('mysql:host=localhost;dbname=votre_nom_de_base_de_donnees', 'utilisateur', 'mot_de_passe');
+
+$sessionId = 901; 
+$stmt = $pdo->prepare("SELECT Message FROM Messagerie WHERE IdSession = ?");
+$stmt->execute([$sessionId]);
+
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    echo "<div class='message'>" . htmlspecialchars($row['Message']) . "</div>";
+}
