@@ -457,4 +457,19 @@ INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, He
 
 ALTER TABLE reservation RENAME COLUMN "status" TO "ReservationStatus";
 
+-- Insérer l'escale pour le trajet 803 (Limoges)
+INSERT INTO Escale (IdLieu, NomRue, NumRue, CodePostal, Accessibilite) VALUES
+('LIM_ESC_1', 'Rue de Limoges', 10, '87000', true);
+
+-- Insérer l'escale pour le trajet 804 (Toulon)
+INSERT INTO Escale (IdLieu, NomRue, NumRue, CodePostal, Accessibilite) VALUES
+('TOU_ESC_1', 'Avenue de Toulon', 5, '83000', false);
+
+-- Associer l'escale de Limoges au trajet 803
+INSERT INTO Contient (IdTrajet, IdLieu) VALUES
+(803, 'LIM_ESC_1');
+
+-- Associer l'escale de Toulon au trajet 804
+INSERT INTO Contient (IdTrajet, IdLieu) VALUES
+(804, 'TOU_ESC_1');
 
