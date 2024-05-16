@@ -1,61 +1,82 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Messagerie</title>
-    <link rel="stylesheet" href="messagerie.css">
-</head>
-<body>
-    <header>
-        <h1>Messagerie</h1>
-    </header>
-    <main>
-        <form action="envoyer_message.php" method="post">
-            <label for="expediteur">Expéditeur (ID Utilisateur):</label>
-            <input type="number" id="expediteur" name="expediteur" required>
-
-            <label for="destinataire">Destinataire (ID Utilisateur):</label>
-            <input type="number" id="destinataire" name="destinataire" required>
-
-            <label for="message">Message:</label>
-            <textarea id="message" name="message" required></textarea>
-
-            <button type="submit">Envoyer</button>
-        </form>
-    </main>
-</body>
-</html>
-<?php
-// Configuration de la connexion à la base de données
-$host = "localhost";
-$port = "5433";  // Port par défaut de PostgreSQL
-$user = "postgres";
-$password = "lilou";
-$dbname = "CoVoiturage";
-$connexion = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password");
-
-if (!$connexion) {
-    die("Échec de la connexion: " . pg_last_error());
+/* Style de base pour le corps de la page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    color: black;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    /* Centralise tout le texte de la page */
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $expediteur = pg_escape_string($connexion, $_POST['expediteur']);
-    $destinataire = pg_escape_string($connexion, $_POST['destinataire']);
-    $message = pg_escape_string($connexion, $_POST['message']);
-
-    // Insertion du message dans la base de données
-    $insertQuery = "INSERT INTO Messagerie (ExpediteurId, DestinataireId, Message) VALUES ($1, $2, $3)";
-    $result = pg_query_params($connexion, $insertQuery, array($expediteur, $destinataire, $message));
-
-    if ($result) {
-        echo "Message envoyé avec succès!";
-    } else {
-        echo "Erreur lors de l'envoi du message: " . pg_last_error($connexion);
-    }
-
-    pg_close($connexion);
-} else {
-    echo "Aucune donnée reçue.";
+.btn-signup {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
 }
-?>
+
+/* Conteneur pour le formulaire de connexion */
+.login-container {
+    width: 100%;
+    /* Prend la largeur complète pour centrer le contenu */
+    max-width: 400px;
+    /* Largeur maximale pour le formulaire */
+    margin: 50px auto;
+    /* Centrer verticalement et horizontalement */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Ombre subtile pour le conteneur */
+}
+
+/* Styles pour les en-têtes à l'intérieur des conteneurs */
+.header h1 {
+    margin: 0 0 20px 0;
+    /* Ajuste la marge en bas pour l'espacement */
+}
+
+/* Styles pour les étiquettes et les champs de saisie */
+label {
+    display: block;
+    /* Rend chaque étiquette en bloc pour un contrôle plus facile */
+    margin-bottom: 5px;
+    /* Espacement en bas de chaque étiquette */
+}
+
+input[type="text"] {
+    width: 100%;
+    /* Utilise toute la largeur du conteneur parent */
+    padding: 10px;
+    /* Ajoute un rembourrage pour faciliter la saisie */
+    margin-bottom: 20px;
+    /* Espacement en bas de chaque champ de saisie */
+    border: 1px solid #ccc;
+    /* Bordure discrète pour les champs de saisie */
+    border-radius: 4px;
+    /* Coins arrondis pour les champs de saisie */
+}
+
+/* Styles pour le bouton de soumission */
+button {
+    width: 100%;
+    /* Le bouton occupe toute la largeur du conteneur parent */
+    padding: 10px;
+    /* Padding pour augmenter la surface cliquable */
+    background-color: #4CAF50;
+    /* Couleur de fond pour le bouton */
+    color: white;
+    /* Texte blanc pour le bouton */
+    border: none;
+    /* Aucune bordure pour le bouton */
+    border-radius: 4px;
+    /* Coins arrondis pour le bouton */
+    cursor: pointer;
+    /* Curseur en forme de main pour indiquer la possibilité de cliquer */
+}
+
+button:hover {
+    background-color: #45a049;
+    /* Changement de couleur au survol pour le bouton */
+}
