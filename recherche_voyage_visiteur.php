@@ -7,39 +7,117 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $VilleArrivee = clean_input($_POST['VilleArrivee']);
     $departureDate = clean_input($_POST['departureDate']);
     $PlaceDispo = clean_input($_POST['PlaceDispo']);
-    
+    // Define departureYear based on the provided departureDate
+    $departureYear = date('Y', strtotime($departureDate));
+
     // Connect to the database
     $pdo = new PDO('pgsql:host=localhost;dbname=postgres', 'postgres', '0000');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Prepare the SQL statement
-    $stmt = $pdo->prepare("SELECT * FROM trajet WHERE VilleDepart = :VilleDepart AND VilleArrivee = :VilleArrivee AND  PlaceDispo>= :PlaceDispo");
+    $stmt = $pdo->prepare("SELECT T.* 
+    FROM Trajet T
+    LEFT JOIN Contient C1 ON T.IdTrajet = C1.IdTrajet
+    LEFT JOIN Escale E1 ON C1.IdEscale = E1.IdEscale
+    WHERE (T.VilleDepart = :VilleDepart 
+           AND T.VilleArrivee = :VilleArrivee 
+           AND T.PlaceDispo >= :PlaceDispo)
+          OR (E1.Lieu = :VilleDepart 
+           AND T.VilleArrivee = :VilleArrivee 
+           AND T.PlaceDispo >= :PlaceDispo)");
+
 
     // Bind parameters
     $stmt->bindParam(':VilleDepart', $VilleDepart);
     $stmt->bindParam(':VilleArrivee', $VilleArrivee);
-    //$stmt->bindParam(':departureDate', $departureDate);
     $stmt->bindParam(':PlaceDispo', $PlaceDispo);
 
     // Execute the query
     $stmt->execute();
 
     // Fetch the results
-    $searchResults = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $trajets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     // Check if any results are returned
-    if (empty($searchResults)) {
-        echo "<p>Aucun trajet à cette date.</p>";
+    if (empty($trajets)) {
+        echo "<p>Aucun trajet disponible pour ce parcours.</p>";
+    }else {
+    $validTrips = [];
+    foreach ($trajets as $t) {
+        $id = $t['idtrajet'];
+
+        // Préparez la requête pour récupérer le jour de départ et la semaine du trajet
+        $stmtDepart = $pdo->prepare("SELECT JourDepart, Semaine FROM Départ WHERE IdTrajet = :IdTrajet");
+    
+        // Liez les paramètres de la requête
+        $stmtDepart->bindParam(':IdTrajet', $id);
+    
+        // Exécutez la requête en passant l'ID du trajet actuel comme paramètre
+        $stmtDepart->execute();
+    
+        // Récupérez les résultats de la requête
+        $departDetail = $stmtDepart->fetch(PDO::FETCH_ASSOC);
+// Vérifiez s'il y a des résultats
+if ($departDetail) {
+    // Accédez au jour de départ et à la semaine
+    $jourDepart = $departDetail['jourdepart'];
+    $semaine = $departDetail['semaine'];
+        $convertedDate = getDateFromWeekDay($departureYear, $departDetail['semaine'], $departDetail['jourdepart']);
+        
+        // Ensure both dates are strings in the same format
+        $convertedDateStr = (new DateTime($convertedDate))->format('Y-m-d');
+        $departureDateStr = (new DateTime($departureDate))->format('Y-m-d'); 
+        if ($convertedDateStr === $departureDateStr) {
+            $validTrips[] = $t;
+        }
+    }}
+
+    if (empty($validTrips)) {
+        echo "<p>Aucun trajet ne correspond à la date sélectionnée.</p>";
+
     } else {
-        // Store the search results in the session
-        $_SESSION['searchResults'] = $searchResults;
+        $_SESSION['trajets'] = $trajets;
+        echo "<p>Trouvé " . count($trajets) . " trajet(s) correspondant à vos critères et dates.</p>";
     }
-}// Function to sanitize input data
+}
+}
+elseif ($_SERVER["REQUEST_METHOD"] != "POST") {
+    // Si des données POST ont été soumises mais tous les champs ne sont pas remplis
+    echo "<p>Veuillez remplir tous les champs pour effectuer une recherche.</p>";
+
+}
+// Function to sanitize input data
 function clean_input($data) {
     $data = trim($data);
     $data = stripslashes($data);
     $data = htmlspecialchars($data);
     return $data;
+}
+// fonction qui convertit jour x de la semaine y en une date :
+function getDateFromWeekDay($year, $weekNumber, $weekDay) {
+    // Validate input
+    if ($weekNumber < 1 || $weekDay < 1 || $weekDay > 7) {
+        throw new InvalidArgumentException("Week number and week day must be valid: weekNumber >= 1, 1 <= weekDay <= 7");
+    }
+
+    // Créer la date correspondant au premier jour de l'année
+    $date = new DateTime("{$year}-01-01");
+
+    // Calculate the offset to the first day of the first week
+    $firstDayOfWeek = (int) $date->format('N');  // 1 (Monday) to 7 (Sunday)
+    $offsetToFirstDayOfWeek = 1 - $firstDayOfWeek;
+
+    // Adjust the date to the first day of the first week
+    $date->modify("{$offsetToFirstDayOfWeek} days");
+
+    // Ajouter les semaines nécessaires, moins une car on est déjà au début de la première semaine
+    $weeksToAdd = $weekNumber - 1;
+    $daysToAdd = ($weeksToAdd * 7) + ($weekDay - 1);
+
+    // Ajouter les jours au début de la première semaine
+    $date->modify("{$daysToAdd} days");
+
+    return $date->format('Y-m-d'); // Format retour YYYY-MM-DD
 }
 ?>
 <!DOCTYPE html>
@@ -58,23 +136,25 @@ function clean_input($data) {
      <link href="style.css" rel="stylesheet">
      <style>
         /* Ajoutez ces styles dans votre fichier style.css */
-.filter-section {
+        /* Ajoutez ces styles dans votre fichier style.css */
+        .filter-section {
     background-color: #f9f9f9;
     border-radius: 8px;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: 8px solid #6B8E23;    
 }
 
 .checkbox-group {
-    margin-bottom: 10px;
+    margin-bottom: 10px; 
 }
 
 .checkbox-group input[type="checkbox"] {
-    margin-right: 5px;
+    margin-right: 5px;      
 }
 
 button[type="submit"] {
-    background-color: #007bff;
+    background-color: #6B8E23;
     color: #fff;
     border: none;
     padding: 10px 20px;
@@ -84,7 +164,7 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-    background-color: #0056b3;
+    background-color: #6B8E23;
 }
 /* Styles pour la section de recherche */
 .filter-container {
@@ -92,6 +172,8 @@ button[type="submit"]:hover {
     padding: 20px;
     border-radius: 5px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 8px solid #6B8E23;    
+
 }
 
 .filter-container form {
@@ -102,6 +184,7 @@ button[type="submit"]:hover {
 
 .filter-container label {
     font-weight: bold;
+    
 }
 
 .filter-container input[type="text"],
@@ -112,40 +195,60 @@ button[type="submit"]:hover {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+    
 }
 
 .filter-container button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color:#6B8E23;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+  
+
 }
 
 .filter-container button:hover {
     background-color: #0056b3;
 }
 /* Styles pour la section des résultats */
+.trips-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* Espace entre les cartes */
+    padding: 20px; /* Espace autour des cartes */
+    background-color: #f4f4f4; /* Couleur de fond légère pour le conteneur */
+}
+
 .trip-card {
-    text-decoration: none;
-    color: #333; /* Couleur du texte */
-    background-color: #eaf7ea; /* Fond vert clair */
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    margin-bottom: 20px; /* Espacement entre les voyages */
-    overflow: hidden; /* Pour empêcher le débordement des éléments enfants */
-    transition: all 0.3s ease;
+    background-color: #fff; /* Fond blanc pour chaque carte */
+    border: 1px solid #ccc; /* Bordure légère pour chaque carte */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Ombre subtile pour la profondeur */
+    padding: 15px; /* Espace intérieur pour chaque carte */
+    text-decoration: none; /* Supprime le soulignement des liens */
+    color: black; /* Couleur du texte */
 }
 
 .trip-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2); /* Ombre plus prononcée au survol */
+    transition: box-shadow 0.3s; /* Transition lisse pour l'ombre */
+}
+
+.trip-details h2 {
+    margin-top: 0; /* Supprime la marge en haut du titre */
+    color: #4CAF50; /* Couleur spéciale pour les titres */
+}
+
+.trip-details p {
+    margin-bottom: 5px; /* Réduit l'espace en dessous de chaque paragraphe */
+    font-size: 14px; /* Taille de police standard pour les détails */
+}.trip-card:hover {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.trip-details {
-    padding: 20px;
-}
+
 
 .trip-details h2 {
     margin-bottom: 10px;
@@ -208,14 +311,15 @@ button[type="submit"]:hover {
         <div id="trip-results">
             <?php
             // Check if there are any search results
-            if (!empty($_SESSION['searchResults'])) {
+            if (!empty($_SESSION['trajets'])) {
                 // Retrieve the results from the session
-                $searchResults = $_SESSION['searchResults'];
+                $trajets = $_SESSION['trajets'];
+
 
                 echo "<div class='trips-container'>"; // Container for all trips
 
                 // Display the results
-                foreach ($searchResults as $result) {
+                foreach ($trajets as $result) {
                     // URL where the client will be redirected when clicking on a trip
                     $detailPageUrl = "voyage.php?tripId=" . urlencode($result['idtrajet']);
 
@@ -223,7 +327,7 @@ button[type="submit"]:hover {
                     echo "<div class='trip-details'>";
 
                     // Display trip details using lowercase keys
-                    echo "<h2>Voyage de " . htmlspecialchars($result['villedepart']) . " à " . htmlspecialchars($result['villearrivee']) . "</h2>";
+                    echo "<h2><strong>Voyage de " . htmlspecialchars($result['villedepart']) . " à " . htmlspecialchars($result['villearrivee']) . "</strong></h2>";
                     echo "<p><strong>Adresse de départ:</strong> " . htmlspecialchars($result['numruedepart']) . " " . htmlspecialchars($result['nomruedepart']) . ", " . htmlspecialchars($result['codepostaldepart']) . ", " . htmlspecialchars($result['villedepart']) . "</p>";
                     echo "<p><strong>Nombre de passagers disponibles:</strong> " . htmlspecialchars($result['placedispo']) . "</p>";
 
@@ -234,7 +338,7 @@ button[type="submit"]:hover {
                 echo "</div>"; // Closing div for trips-container
 
                 // Clear the results from the session after displaying them
-                unset($_SESSION['searchResults']);
+                unset($_SESSION['trajets']);
             }
             ?>
         </div>
