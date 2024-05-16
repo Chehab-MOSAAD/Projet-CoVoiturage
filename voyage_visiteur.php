@@ -129,7 +129,7 @@ if(isset($_GET['tripId'])) {
         </div>
     </div>
     <div class="col-md-4">
-       <a href="reservation_en_attente.php" class="btn btn-primary">Réserver ce voyage</a>
+       <a href="/nizar/login.php" class="btn btn-primary">Réserver ce voyage</a>
     </div>
     <div class="col-md-4">
        
