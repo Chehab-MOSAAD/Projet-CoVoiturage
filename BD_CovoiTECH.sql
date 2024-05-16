@@ -455,3 +455,6 @@ INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, He
 -- id 803 (Paris->Lyon) jour 1 sem 1 donc 01/01/2024--
 -- id 804 (Marseille->Nice) jour 3 semaine 10 donc 06/03/2024--
 
+
+ALTER TABLE reservation RENAME COLUMN "status" TO "ReservationStatus";
+
