@@ -457,19 +457,32 @@ INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, He
 
 ALTER TABLE reservation RENAME COLUMN "status" TO "ReservationStatus";
 
--- Insérer l'escale pour le trajet 803 (Limoges)
-INSERT INTO Escale (IdLieu, NomRue, NumRue, CodePostal, Accessibilite) VALUES
-('LIM_ESC_1', 'Rue de Limoges', 10, '87000', true);
+DROP TABLE Contient;
+DROP TABLE Escale;
+CREATE TABLE Escale(
+   IdEscale INT PRIMARY KEY,
+   Lieu VARCHAR(100),
+   NomRue VARCHAR(100) NOT NULL CHECK (NomRue ~ '^[A-Za-z ]+$'),
+   NumRue INT NOT NULL CHECK (NumRue BETWEEN 1 AND 9999),
+   CodePostal VARCHAR(5) NOT NULL CHECK (CodePostal ~ '^\d{5}$'),
+   Accessibilite BOOLEAN NOT NULL
+);
+CREATE TABLE Contient(
+   IdTrajet INT,
+   IdEscale INT,
+   PRIMARY KEY(IdTrajet, IdEscale),
+   FOREIGN KEY(IdTrajet) REFERENCES Trajet(IdTrajet),
+   FOREIGN KEY(IdEscale) REFERENCES Escale(IdEscale)
+)
 
--- Insérer l'escale pour le trajet 804 (Toulon)
-INSERT INTO Escale (IdLieu, NomRue, NumRue, CodePostal, Accessibilite) VALUES
-('TOU_ESC_1', 'Avenue de Toulon', 5, '83000', false);
+INSERT INTO Escale (IdEscale, Lieu, NomRue, NumRue, CodePostal, Accessibilite) VALUES
+(1, 'Limoges', 'Rue de Limoges', 10, '87000', true);
+INSERT INTO Escale (IdEscale, Lieu, NomRue, NumRue, CodePostal, Accessibilite) VALUES
+(2, 'Toulon', 'Avenue de Toulon', 5, '83000', false);
 
--- Associer l'escale de Limoges au trajet 803
-INSERT INTO Contient (IdTrajet, IdLieu) VALUES
-(803, 'LIM_ESC_1');
+INSERT INTO Contient (IdTrajet, IdEscale) VALUES
+(803, 1);
+INSERT INTO Contient (IdTrajet, IdEscale) VALUES
+(804, 2);
 
--- Associer l'escale de Toulon au trajet 804
-INSERT INTO Contient (IdTrajet, IdLieu) VALUES
-(804, 'TOU_ESC_1');
 
