@@ -35,23 +35,26 @@ $num_permis = $_GET['num_permis'] ?? 'Non spécifié';
             overflow: hidden;
         }
         header {
-            background: #333;
-            color: #fff;
+            background-color: #4CAF50;
+            color: white;
             padding-top: 30px;
             min-height: 70px;
-            border-bottom: #77a3d0 3px solid;
+            border-bottom: #388E3C 3px solid;
         }
         header h1 {
             margin: 0;
             text-align: center;
         }
         .result {
-            background: #e2e2e2;
+            background: white;
             padding: 20px;
             margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         .result h2 {
             text-align: center;
+            color: #4CAF50;
         }
         .result ul {
             list-style: none;
@@ -59,8 +62,9 @@ $num_permis = $_GET['num_permis'] ?? 'Non spécifié';
         }
         .result ul li {
             padding: 10px;
-            background: #fff;
+            background: #f4f4f4;
             margin-bottom: 10px;
+            border-radius: 4px;
         }
     </style>
 </head>
@@ -80,4 +84,16 @@ $num_permis = $_GET['num_permis'] ?? 'Non spécifié';
                 <li>Numéro Rue de départ: <?php echo htmlspecialchars($num_rue_depart); ?></li>
                 <li>Ville d'arrivée: <?php echo htmlspecialchars($ville_arrivee); ?></li>
                 <li>Code postal d'arrivée: <?php echo htmlspecialchars($code_postal_arrivee); ?></li>
-                <li>
+                <li>Nom Rue d'arrivée: <?php echo htmlspecialchars($nom_rue_arrivee); ?></li>
+                <li>Numéro Rue d'arrivée: <?php echo htmlspecialchars($num_rue_arrivee); ?></li>
+                <li>Places disponibles: <?php echo htmlspecialchars($place_dispo); ?></li>
+                <li>Date de départ: <?php echo htmlspecialchars($date_depart); ?></li>
+                <li>Commentaire: <?php echo htmlspecialchars($commentaire); ?></li>
+                <li>Escale: <?php echo htmlspecialchars($escale); ?></li>
+                <li>Matricule: <?php echo htmlspecialchars($matricule); ?></li>
+                <li>Numéro de permis: <?php echo htmlspecialchars($num_permis); ?></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM information_schema.columns 
+        WHERE table_name='messagerie' AND column_name='status'
+    ) THEN
+        ALTER TABLE messagerie ADD COLUMN status VARCHAR(10) DEFAULT 'Pending';
+    END IF;
+END $$;
+
+
+SELECT column_name
+FROM information_schema.columns
+WHERE table_name='messagerie' AND column_name='status';

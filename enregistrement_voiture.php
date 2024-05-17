@@ -9,7 +9,7 @@
 <body>
     <div class="login-container">
         <div class="header">
-            <h1>Bienvenue  !</h1>
+            <h1>Bienvenue !</h1>
         </div>
         <form action="enregistrement_voiture.php" method="POST">
             <label for="matricule">Numéro de Matricule</label>
@@ -28,7 +28,7 @@
             <input type="text" id="couleur" name="couleur" required>
 
             <label for="nbr_place">Nombre de places</label>
-            <input type="text" id="nbr_place" name="nbr_place" required>
+            <input type="number" id="nbr_place" name="nbr_place" required>
 
             <label for="carburant">Carburant</label>
             <input type="text" id="carburant" name="carburant" required>
@@ -42,29 +42,31 @@
 </body>
 </html>
 <?php
-$host = "localhost";
-$port = "5433";  // Port par défaut de PostgreSQL
-$user = "postgres";
-$password = "lilou";
-$dbname = "CoVoiturage";
+session_start(); // Démarrer la session
 
-// Connexion à la base de données
-$connexion = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password");
+$host = 'localhost';
+$db = 'CoVoiturage';
+$user = 'postgres';
+$pass = 'lilou';
+$port = '5433';
+$dsn = "pgsql:host=$host;port=$port;dbname=$db";
 
-if (!$connexion) {
-    die("Échec de la connexion: " . pg_last_error());
+try {
+    $pdo = new PDO($dsn, $user, $pass);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion à la base de données : " . $e->getMessage());
 }
 
-// Vérification de la méthode de la requête
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $matricule = pg_escape_string($connexion, $_POST['matricule']);
-    $marque = pg_escape_string($connexion, $_POST['marque']);
-    $modele = pg_escape_string($connexion, $_POST['modele']);
-    $type = pg_escape_string($connexion, $_POST['type']);
-    $couleur = pg_escape_string($connexion, $_POST['couleur']);
-    $nbr_place = pg_escape_string($connexion, $_POST['nbr_place']);
-    $carburant = pg_escape_string($connexion, $_POST['carburant']);
-    $numpermis = pg_escape_string($connexion, $_POST['numpermis']);
+    $matricule = filter_input(INPUT_POST, 'matricule', FILTER_SANITIZE_STRING);
+    $marque = filter_input(INPUT_POST, 'marque', FILTER_SANITIZE_STRING);
+    $modele = filter_input(INPUT_POST, 'modele', FILTER_SANITIZE_STRING);
+    $type = filter_input(INPUT_POST, 'type', FILTER_SANITIZE_STRING);
+    $couleur = filter_input(INPUT_POST, 'couleur', FILTER_SANITIZE_STRING);
+    $nbr_place = filter_input(INPUT_POST, 'nbr_place', FILTER_VALIDATE_INT);
+    $carburant = filter_input(INPUT_POST, 'carburant', FILTER_SANITIZE_STRING);
+    $numpermis = filter_input(INPUT_POST, 'numpermis', FILTER_SANITIZE_STRING);
 
     // Affichage des valeurs soumises pour débogage
     echo "Matricule: " . htmlspecialchars($matricule) . "<br>";
@@ -97,7 +99,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Couleur invalide. Valeur reçue : " . htmlspecialchars($couleur));
     }
 
-    if (!is_numeric($nbr_place) || $nbr_place <= 0 || $nbr_place > 100) {
+    if ($nbr_place === false || $nbr_place <= 0 || $nbr_place > 100) {
         die("Nombre de places invalide. Valeur reçue : " . htmlspecialchars($nbr_place));
     }
 
@@ -109,16 +111,86 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         die("Numéro de permis invalide. Valeur reçue : " . htmlspecialchars($numpermis));
     }
 
-    // Requête préparée pour insérer les données dans la table Voiture
-    $insertVoitureQuery = "INSERT INTO voiture (matricule, marque, modele, type, couleur, nbrplace, carburant, numpermis) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)";
-    $insertVoitureResult = pg_query_params($connexion, $insertVoitureQuery, array($matricule, $marque, $modele, $type, $couleur, $nbr_place, $carburant, $numpermis));
+    // Vérifiez si le numéro de permis existe dans la table Conducteur
+    $checkPermisQuery = "SELECT COUNT(*) FROM Conducteur WHERE NumPermis = :numpermis";
+    $stmt = $pdo->prepare($checkPermisQuery);
+    $stmt->execute(['numpermis' => $numpermis]);
 
-    if ($insertVoitureResult) {
-        echo "Voiture enregistrée avec succès.";
-    } else {
-        echo "Erreur lors de l'enregistrement de la voiture: " . pg_last_error($connexion);
+    if ($stmt->fetchColumn() == 0) {
+        die("Le numéro de permis n'existe pas dans la table Conducteur. Veuillez ajouter le conducteur d'abord.");
     }
 
-    pg_close($connexion);
+    // Insérer la date courante dans LaDate si elle n'existe pas
+    $currentDate = getdate();
+    $jour = $currentDate['mday'];
+    $mois = $currentDate['mon'];
+    $annee = $currentDate['year'];
+    $heure = $currentDate['hours'] . ':' . $currentDate['minutes'] . ':' . $currentDate['seconds'];
+
+    $insertDateQuery = "INSERT INTO LaDate (Jour, Mois, Annee, Heure) 
+                        VALUES (:jour, :mois, :annee, :heure) 
+                        ON CONFLICT (Jour, Mois, Annee) DO NOTHING";
+    $stmt = $pdo->prepare($insertDateQuery);
+    $stmt->execute(['jour' => $jour, 'mois' => $mois, 'annee' => $annee, 'heure' => $heure]);
+
+    // Insertion des données dans la table Voiture
+    $insertVoitureQuery = "INSERT INTO Voiture (matricule, marque, modele, type, couleur, nbrplace, carburant, numpermis) 
+                           VALUES (:matricule, :marque, :modele, :type, :couleur, :nbrplace, :carburant, :numpermis)";
+    $stmt = $pdo->prepare($insertVoitureQuery);
+
+    try {
+        $stmt->execute([
+            ':matricule' => $matricule,
+            ':marque' => $marque,
+            ':modele' => $modele,
+            ':type' => $type,
+            ':couleur' => $couleur,
+            ':nbrplace' => $nbr_place,
+            ':carburant' => $carburant,
+            ':numpermis' => $numpermis
+        ]);
+        echo "Voiture enregistrée avec succès.";
+
+        // Récupération de l'ID de l'utilisateur connecté (ou le mettre en dur pour le test)
+        $exp_id = 304; // Remplacez par l'ID de l'utilisateur connecté
+        $admin_id = 1; // ID de l'administrateur
+
+        // Création du message pour l'administrateur
+        $sujet = "Nouvelle demande d'enregistrement de voiture";
+        $message = "Une nouvelle voiture a été enregistrée avec les informations suivantes :\n
+                    Matricule : $matricule\n
+                    Marque : $marque\n
+                    Modèle : $modele\n
+                    Type : $type\n
+                    Couleur : $couleur\n
+                    Nombre de places : $nbr_place\n
+                    Carburant : $carburant\n
+                    Numéro de permis : $numpermis";
+
+        // Insertion du message dans la table Messagerie
+        $insertMessageQuery = "INSERT INTO Messagerie (IdSession, Message, ExpediteurId, DestinataireId) 
+                               VALUES (DEFAULT, :message, :expediteurid, :destinataireid) RETURNING IdSession";
+        $stmt = $pdo->prepare($insertMessageQuery);
+        $stmt->execute([':message' => $message, ':expediteurid' => $exp_id, ':destinataireid' => $admin_id]);
+
+        $idSession = $stmt->fetchColumn();
+
+        // Insertion dans la table Envoyer
+        $insertEnvoyerQuery = "INSERT INTO Envoyer (IdSession, IdUtilisateur, Jour, Mois, Annee) 
+                               VALUES (:idSession, :idUtilisateur, :jour, :mois, :annee)";
+        $stmt = $pdo->prepare($insertEnvoyerQuery);
+        $stmt->execute([':idSession' => $idSession, ':idUtilisateur' => $exp_id, ':jour' => $jour, ':mois' => $mois, ':annee' => $annee]);
+
+        // Insertion dans la table Recevoir
+        $insertRecevoirQuery = "INSERT INTO Recevoir (IdSession, IdUtilisateur, Jour, Mois, Annee) 
+                                VALUES (:idSession, :idUtilisateur, :jour, :mois, :annee)";
+        $stmt = $pdo->prepare($insertRecevoirQuery);
+        $stmt->execute([':idSession' => $idSession, ':idUtilisateur' => $admin_id, ':jour' => $jour, ':mois' => $mois, ':annee' => $annee]);
+
+        echo "Notification envoyée à l'administrateur.";
+        echo '<a href="message.php?exp_id=' . urlencode($exp_id) . '&dest_id=' . urlencode($admin_id) . '&nom=' . urlencode('Administrateur') . '&prenom=' . urlencode('CoVoiTECH') . '&type=admin" class="btn">Envoyer un message</a>';
+    } catch (PDOException $e) {
+        echo "Erreur lors de l'enregistrement de la voiture ou de l'envoi de la notification: " . $e->getMessage();
+    }
 }
 ?>

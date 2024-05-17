@@ -32,10 +32,6 @@
                 <input type="text" name="escale" placeholder="Ajouter un escale">
                 <textarea name="commentaire" placeholder="Commentaire" required></textarea>
             </div>
-            <div class="form-row">
-                <input type="text" name="matricule" placeholder="Matricule" required>
-                <input type="text" name="num_permis" placeholder="Numéro de permis" required>
-            </div>
             <footer>
                 <button type="submit">Proposer un trajet</button>
             </footer>
@@ -70,9 +66,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $place_dispo = pg_escape_string($connexion, $_POST['place_dispo']);
     $date_depart = pg_escape_string($connexion, $_POST['date_depart']);
     $commentaire = pg_escape_string($connexion, $_POST['commentaire']);
-    $matricule = pg_escape_string($connexion, $_POST['matricule']);
-    $num_permis = pg_escape_string($connexion, $_POST['num_permis']);
     $escale = pg_escape_string($connexion, $_POST['escale']);
+
+    // Supposons que l'utilisateur connecté a l'ID 304
+    $id_utilisateur = 304;
+
+    // Récupérer les informations de la voiture pour le conducteur
+    $voitureQuery = "SELECT matricule, numpermis FROM voiture WHERE numpermis = (SELECT numpermis FROM conducteur WHERE idutilisateur = $1)";
+    $voitureResult = pg_query_params($connexion, $voitureQuery, array($id_utilisateur));
+    $voiture = pg_fetch_assoc($voitureResult);
+
+    if (!$voiture) {
+        die("Erreur : Le conducteur n'a pas de voiture enregistrée.");
+    }
+
+    $matricule = $voiture['matricule'];
+    $num_permis = $voiture['numpermis'];
 
     // Affichage des valeurs soumises pour débogage
     echo "Ville de départ: " . htmlspecialchars($ville_depart) . "<br>";
@@ -86,8 +95,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "Places disponibles: " . htmlspecialchars($place_dispo) . "<br>";
     echo "Date de départ: " . htmlspecialchars($date_depart) . "<br>";
     echo "Commentaire: " . htmlspecialchars($commentaire) . "<br>";
-    echo "Matricule: " . htmlspecialchars($matricule) . "<br>";
-    echo "Numéro de permis: " . htmlspecialchars($num_permis) . "<br>";
     echo "Escale: " . htmlspecialchars($escale) . "<br>";
 
     // Insertion dans la base de données
@@ -108,4 +115,3 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     echo "Aucune donnée reçue.";
 }
 ?>
-
