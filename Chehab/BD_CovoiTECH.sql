@@ -486,3 +486,22 @@ INSERT INTO Contient (IdTrajet, IdEscale) VALUES
 (804, 2);
 
 
+ALTER TABLE Administrateur
+ADD COLUMN Mail VARCHAR(100) UNIQUE NOT NULL CHECK (Mail SIMILAR TO '%@%\.%'),
+ADD COLUMN MotDePasse VARCHAR(100) NOT NULL CHECK (MotDePasse ~ '.*[a-z]+.*' AND MotDePasse ~ '.*[A-Z]+.*');
+
+
+
+CREATE SEQUENCE IF NOT EXISTS administrateur_idadm_seq
+START WITH 1
+INCREMENT BY 1
+NO MINVALUE
+NO MAXVALUE
+CACHE 1;
+
+
+ALTER TABLE Administrateur ALTER COLUMN IdAdm SET DEFAULT nextval('administrateur_idadm_seq');
+
+ALTER TABLE CommenterReservation DROP CONSTRAINT commenterreservation_pkey;
+ALTER TABLE CommenterReservation ADD COLUMN IdCommentaire SERIAL PRIMARY KEY;
+
