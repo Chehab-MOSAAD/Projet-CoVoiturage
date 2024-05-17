@@ -1,0 +1,226 @@
+/* Variables de couleur */
+:root {
+    --primary-color: #4CAF50;
+    --accent-color: #2E7D32;
+    --bg-color: #f7f7f7;
+    --text-color: #212529;
+    --border-color: #ccc;
+}
+
+/* Style global */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background-color: var(--bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+header {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 1em 0;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    width: 100%;
+    position: fixed;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+nav a {
+    color: white;
+    padding: 10px 15px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+nav a:hover, nav a.active {
+    background-color: var(--accent-color);
+}
+
+/* Style de la barre latérale */
+aside {
+    width: 240px;
+    background-color: #fff;
+    padding: 20px;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    overflow-y: auto;
+}
+
+.filter-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.filter-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.filter-option label {
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+/* Style du contenu principal */
+.content {
+    transition: margin-left 0.3s;
+    padding: 20px;
+    margin-left: 260px;
+}
+
+.card {
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: scale(1.03);
+}
+
+/* Conception réactive */
+@media screen and (max-width: 768px) {
+    aside {
+        width: 200px;
+    }
+    .content {
+        margin-left: 220px;
+    }
+}
+
+/* Style des résultats de recherche */
+#results-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    list-style: none;
+    padding: 0;
+}
+
+.search-result {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.search-result:hover {
+    transform: translateY(-5px);
+}
+
+.search-result .info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+h2 {
+    color: var(--text-color);
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+p {
+    color: #555;
+    margin: 5px 0;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--accent-color);
+}
+
+/* Style pour la boîte de recherche */
+.search-box {
+    background-color: #fff;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 80px auto 20px;
+    text-align: center;
+    z-index: 1000;
+}
+
+.search-box h2 {
+    margin-bottom: 10px;
+    font-size: 1.5em;
+}
+
+.search-box p {
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 1.1em;
+}
+
+.search-fields {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.search-fields input, .search-fields button {
+    padding: 10px;
+    border: 2px solid #38b238;
+    border-radius: 4px;
+    outline: none;
+    font-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.search-fields input:focus {
+    border-color: #2d862d;
+}
+
+.search-button {
+    background-color: #38b238;
+    color: white;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: #2d862d;
+}
+
+/* Style du pied de page */
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: var(--primary-color);
+    color: #fff;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+}
