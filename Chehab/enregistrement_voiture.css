@@ -1,0 +1,82 @@
+/* Style de base pour le corps de la page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: white;
+    color: black;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    /* Centralise tout le texte de la page */
+}
+
+.btn-signup {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Conteneur pour le formulaire de connexion */
+.login-container {
+    width: 100%;
+    /* Prend la largeur complète pour centrer le contenu */
+    max-width: 400px;
+    /* Largeur maximale pour le formulaire */
+    margin: 50px auto;
+    /* Centrer verticalement et horizontalement */
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Ombre subtile pour le conteneur */
+}
+
+/* Styles pour les en-têtes à l'intérieur des conteneurs */
+.header h1 {
+    margin: 0 0 20px 0;
+    /* Ajuste la marge en bas pour l'espacement */
+}
+
+/* Styles pour les étiquettes et les champs de saisie */
+label {
+    display: block;
+    /* Rend chaque étiquette en bloc pour un contrôle plus facile */
+    margin-bottom: 5px;
+    /* Espacement en bas de chaque étiquette */
+}
+
+input[type="text"] {
+    width: 100%;
+    /* Utilise toute la largeur du conteneur parent */
+    padding: 10px;
+    /* Ajoute un rembourrage pour faciliter la saisie */
+    margin-bottom: 20px;
+    /* Espacement en bas de chaque champ de saisie */
+    border: 1px solid #ccc;
+    /* Bordure discrète pour les champs de saisie */
+    border-radius: 4px;
+    /* Coins arrondis pour les champs de saisie */
+}
+
+/* Styles pour le bouton de soumission */
+button {
+    width: 100%;
+    /* Le bouton occupe toute la largeur du conteneur parent */
+    padding: 10px;
+    /* Padding pour augmenter la surface cliquable */
+    background-color: #4CAF50;
+    /* Couleur de fond pour le bouton */
+    color: white;
+    /* Texte blanc pour le bouton */
+    border: none;
+    /* Aucune bordure pour le bouton */
+    border-radius: 4px;
+    /* Coins arrondis pour le bouton */
+    cursor: pointer;
+    /* Curseur en forme de main pour indiquer la possibilité de cliquer */
+}
+
+button:hover {
+    background-color: #45a049;
+    /* Changement de couleur au survol pour le bouton */
+}

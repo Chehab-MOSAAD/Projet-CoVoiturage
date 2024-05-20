@@ -1,0 +1,77 @@
+/* Style général pour la page */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2; /* Couleur de fond légère pour la page */
+    color: #333; /* Couleur de texte principale */
+    margin: 0;
+    padding: 20px;
+}
+
+header {
+    background-color: #ffffff;
+    padding: 10px 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.user-stats {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #666;
+}
+
+button {
+    background-color: #4CAF50; /* Vert pour les boutons */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin-top: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049; /* Un vert légèrement plus foncé au survol */
+}
+
+h1, h2 {
+    color: #333;
+}
+
+/* Styles spécifiques au formulaire */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-row input,
+.form-row textarea,
+.form-row button {
+    flex: 1;
+    margin-right: 10px; /* Espacement entre les champs */
+    padding: 8px;
+    border: 1px solid #ccc; /* Bordure subtile pour les champs de formulaire */
+    border-radius: 4px;
+}
+
+.form-row textarea {
+    height: 36px; /* Hauteur ajustée pour correspondre aux autres inputs */
+    flex: 1; /* Assure que le textarea est de taille équivalente aux autres champs */
+    resize: none; /* Désactive la possibilité de redimensionner le textarea */
+}
+
+/* S'assurer que le dernier élément de chaque rangée ne possède pas de marge à droite */
+.form-row input:last-child,
+.form-row textarea:last-child,
+.form-row button:last-child {
+    margin-right: 0;
+}
+
+footer {
+    text-align: center;
+    padding: 10px 0;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 -2px 4px rgba(0,0,0,0.1);
+}
