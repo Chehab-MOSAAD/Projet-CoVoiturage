@@ -337,6 +337,8 @@ CREATE TABLE Voir(
 );
 
 
+
+
 --insertion -- 
 
 INSERT INTO LaDate (Jour, Mois, Annee)
@@ -504,4 +506,191 @@ ALTER TABLE Administrateur ALTER COLUMN IdAdm SET DEFAULT nextval('administrateu
 
 ALTER TABLE CommenterReservation DROP CONSTRAINT commenterreservation_pkey;
 ALTER TABLE CommenterReservation ADD COLUMN IdCommentaire SERIAL PRIMARY KEY;
+
+----- ajout de données--------
+
+INSERT INTO Messagerie (IdSession, Message)
+VALUES 
+(1, 'Bonjour utilisateur, je suis votre conducteur pour demain.'),
+(2, 'Bonjour conducteur, merci pour votre message.'),
+(3, 'Bonjour admin, j’ai un problème avec mon compte utilisateur.'),
+(4, 'Bonjour conducteur, pouvez-vous préciser votre problème ?');
+
+INSERT INTO Visiteur (IdTemp)
+VALUES 
+('VIST-001-2024'),
+('VIST-002-2024'),
+('VIST-003-2024'),
+('VIST-004-2024');
+
+INSERT INTO Jour (JourDepart, JourArrivee, Semaine)
+VALUES 
+(1, 2, 10), -- Lundi à Mardi, semaine 10
+(3, 5, 20), -- Mercredi à Vendredi, semaine 20
+(4, 4, 30), -- Jeudi à Jeudi, semaine 30
+(6, 7, 40), -- Samedi à Dimanche, semaine 40
+(7, 1, 50), -- Dimanche à Lundi, semaine 50
+(2, 3, 11), -- Mardi à Mercredi, semaine 11
+(3, 3, 22), -- Mercredi à Mercredi, semaine 22
+(5, 6, 33), -- Vendredi à Samedi, semaine 33
+(6, 6, 44), -- Samedi à Samedi, semaine 44
+(1, 7, 1); -- Lundi à Dimanche, semaine 1
+
+
+INSERT INTO Boutique (IdCadeau, NomCadeau, DescriptionCadeau, PointsNecessaires)
+VALUES 
+(1, 'Tasse personnalisée', 'Une tasse avec une photo personnalisable', 150),
+(2, 'T-shirt graphique', 'T-shirt 100% coton avec un graphique exclusif', 200),
+(3, 'Bon d''achat', 'Utilisable chez tous les partenaires', 500),
+(4, 'Casque Bluetooth', 'Casque sans fil avec réduction de bruit', 800),
+(5, 'Carte cadeau cinéma', 'Carte pour 5 séances de cinéma', 250);
+
+INSERT INTO Escale (IdEscale, Lieu, NomRue, NumRue, CodePostal, Accessibilite)
+VALUES 
+(10, 'Escale Paris Centre', 'Avenue Victor Hugo', 85, '75016', TRUE),
+(20, 'Escale Lyon Perrache', 'Rue de la Republique', 125, '69002', FALSE),
+(30, 'Escale Marseille Vieux-Port', 'Quai du Port', 43, '13002', TRUE),
+(40, 'Escale Toulouse Capitole', 'Place du Capitole', 1, '31000', FALSE);
+
+INSERT INTO Historique (IdHistorique)
+VALUES 
+(1),
+(2),
+(3),
+(4);
+INSERT INTO LaDate (Jour, Mois, Annee)
+VALUES 
+(15, 6, 2001),
+(22, 7, 2002),
+(5, 12, 1999),
+(9, 11, 2003);
+
+
+---si tu as mis idutlisateur SERIAL, tu enléve les ids tout simplement, ça se génére automatiquement ---
+
+INSERT INTO Utilisateur (IdUtilisateur,Mail, MotDePasse, Nom, Prenom, Sexe, Tel, Handicap, NotePassager, LangueParle1, LangueParle2, Fumeur, Jour, Mois, Annee)
+VALUES 
+(810,'john.doe@gmail.com', 'Password1', 'Doe', 'John', 'M', '01234567', FALSE, 5, 'English', 'French', FALSE, 15, 6, 2001),
+(820,'jane.smith@ut3.com', 'Secure2Pass', 'Smith', 'Jane', 'F', '02345678', TRUE, 4, 'French', 'Spanish', TRUE, 22, 7, 2002),
+(830,'alice.johnson@yahoo.com', 'HelloWorld3', 'Johnson', 'Alice', 'F', '03456789', FALSE, 3, 'German', '', FALSE, 5, 12, 1999),
+(840,'bob.brown@hotmail.com', 'Great4Job', 'Brown', 'Bob', 'M', '04567890', TRUE, 5, 'Spanish', 'Italian', TRUE, 9, 11,2003);
+
+INSERT INTO Conducteur (NumPermis, Points, NoteConducteur, IdUtilisateur)
+VALUES 
+('PERMIS1234', 12, 4.5, 810),
+('PERMIS5678', 15, 4.8, 820),
+('PERMIS9012', 8, 3.9, 830),
+('PERMIS3456', 10, 4.2, 840);
+INSERT INTO Voiture (Matricule, Marque, Modele, Type, Couleur, NbrPlace, Carburant, NumPermis)
+VALUES 
+('ABC1234', 'Toyota', 'Corolla', 'Berline', 'blanc', 5, 'hybride', 'PERMIS1234'),
+('DEF5678', 'Ford', 'Fiesta', 'Compacte', 'rouge', 5, 'essence', 'PERMIS5678'),
+('GHI9012', 'Tesla', 'Model 3', 'Berline', 'noir', 5, 'électrique', 'PERMIS9012'),
+('JKL3456', 'Renault', 'Clio', 'Compacte', 'bleu', 5, 'diesel', 'PERMIS3456');
+
+INSERT INTO Trajet (IdTrajet, VilleDepart, CodePostalDepart, NomRueDepart, NumRueDepart, VilleArrivee, CodePostalArrivee, NomRueArrivee, NumRueArrivee, CommentaireTrajetConducteur, PlaceDispo, Matricule, NumPermis)
+VALUES 
+(1, 'Paris', '75001', 'Rue de Rivoli', 58, 'Versailles', '78000', 'Boulevard de la Reine', 15, 'Départ du centre de Paris, passager respectueux seulement.', 3, 'ABC1234', 'PERMIS1234'),
+(2, 'Lyon', '69001', 'Rue de la Republique', 101, 'Grenoble', '38000', 'Cours Jean Jaures', 89, 'Voyage tet le matin, pas de gros bagages.', 2, 'DEF5678', 'PERMIS5678'),
+(3, 'Marseille', '13001', 'La Canebiere', 23, 'Nice', '06000', 'Avenue Jean Medecin', 46, 'Trajet direct sans arret.', 4, 'GHI9012', 'PERMIS9012'),
+(4, 'Toulouse', '31000', 'Allee Jean Jaures', 32, 'Montpellier', '34000', 'Place de la Comedie', 5, 'Retour le soir apres 18h.', 3, 'JKL3456', 'PERMIS3456');
+
+INSERT INTO LaDate (Jour, Mois, Annee)
+VALUES 
+(3, 8, 2000),
+(18, 9, 2000),
+(21, 10, 2000),
+(29, 11, 2000);
+
+INSERT INTO Utilisateur (IdUtilisateur, Mail, MotDePasse, Nom, Prenom, Sexe, Tel, Handicap, NotePassager, LangueParle1, LangueParle2, Fumeur, Jour, Mois, Annee)
+VALUES 
+(850, 'charlie.green@univ-tlse3.fr', 'ExamplePass1', 'Green', 'Charlie', 'M', '05678901', FALSE, 5, 'English', '', FALSE, 3, 8, 2000),
+(860, 'diana.prince@domain.com', 'SecurePass2', 'Prince', 'Diana', 'F', '06789012', TRUE, 4, 'French', 'Greek', TRUE, 18, 9, 2000),
+(870, 'edward.norton@web.com', 'WebPass3', 'Norton', 'Edward', 'M', '07890123', FALSE, 2, 'German', 'English', FALSE, 21, 10, 2000),
+(880, 'fiona.shrek@outlook.com', 'ShrekPass4', 'Shrek', 'Fiona', 'F', '08901234', TRUE, 3, 'Spanish', 'Portuguese', TRUE, 29, 11, 2000);
+
+INSERT INTO Envoyer (IdSession, IdUtilisateur, Jour, Mois, Annee)
+VALUES 
+(1, 810, 15, 6, 2001),
+(2, 820, 22, 7, 2002),
+(3, 830, 5, 12, 1999),
+(4, 840, 9, 11, 2003);
+
+
+INSERT INTO Recevoir (IdSession, IdUtilisateur, Jour, Mois, Annee)
+VALUES 
+(1, 820, 15, 6, 2001),
+(2, 830, 22, 7, 2002),
+(3, 840, 5, 12, 1999),
+(4, 810, 9, 11, 2003);
+
+INSERT INTO Rechercher (IdUtilisateur, IdTemp, IdTrajet)
+VALUES 
+(810, 'VIST-001-2024', 1),
+(820, 'VIST-002-2024', 2),
+(830, 'VIST-003-2024', 3),
+(840, 'VIST-004-2024', 4);
+
+INSERT INTO Départ (IdTrajet, JourDepart, JourArrivee, Semaine, HeureDepart, HeureArrivee)
+VALUES 
+(1, 3, 5, 20, '08:00:00', '10:00:00'),
+(2, 3, 3, 22, '09:00:00', '11:00:00'),
+(3, 1, 7, 1, '08:00:00', '09:00:00'),
+(4, 6, 6, 44, '09:00:00', '14:00:00');
+INSERT INTO MettreJour (IdUtilisateur, IdUtilisateur_1, Jour, Mois, Annee)
+VALUES 
+(810, 820, 15, 6, 2001),
+(820, 830, 22, 7, 2002),
+(830, 840, 5, 12, 1999),
+(840, 810, 9, 11, 2003);
+
+INSERT INTO AnnulerT (IdTrajet, NumPermis)
+VALUES 
+(1, 'PERMIS1234'),
+(2, 'PERMIS5678'),
+(3, 'PERMIS9012'),
+(4, 'PERMIS3456');
+INSERT INTO SeConnecter (IdUtilisateur, IdTemp)
+VALUES 
+(810, 'VIST-001-2024'),
+(820, 'VIST-002-2024'),
+(830, 'VIST-003-2024'),
+(840, 'VIST-004-2024');
+INSERT INTO Acheter (NumPermis, IdCadeau)
+VALUES 
+('PERMIS1234', 1),
+('PERMIS5678', 2),
+('PERMIS9012', 3),
+('PERMIS3456', 4);
+
+INSERT INTO Consulter (NumPermis, IdCadeau)
+VALUES 
+('PERMIS1234', 1),
+('PERMIS5678', 2),
+('PERMIS9012', 3),
+('PERMIS3456', 4);
+
+INSERT INTO Voir (IdUtilisateur, IdHistorique)
+VALUES 
+(810, 1),
+(820, 2),
+(830, 3),
+(840, 4);
+
+
+
+
+
+ 
+
+
+
+
+
+
+
+
+
+
+
 
