@@ -1,4 +1,6 @@
 <?php
+session_start(); // Démarrer la session
+
 // Connexion à la base de données
 $host = "localhost";
 $port = "5433";
@@ -11,15 +13,48 @@ if (!$connexion) {
     die("Échec de la connexion: " . pg_last_error());
 }
 
-// Récupération des contacts (tous les utilisateurs et conducteurs)
-$contactsQuery = "SELECT idutilisateur, nom, prenom FROM utilisateur";
+// Vérifiez si l'email du conducteur est stocké dans la session
+if (!isset($_SESSION['email_conducteur'])) {
+    die("Erreur : Aucun email de conducteur trouvé dans la session.");
+}
+
+$email_conducteur = $_SESSION['email_conducteur'];
+
+// Récupération de l'ID du conducteur
+$idQuery = "SELECT c.idutilisateur 
+            FROM conducteur c 
+            JOIN utilisateur u ON c.idutilisateur = u.idutilisateur 
+            WHERE u.mail = $1";
+$idResult = pg_query_params($connexion, $idQuery, array($email_conducteur));
+
+if (!$idResult) {
+    die("Erreur lors de la récupération de l'ID du conducteur: " . pg_last_error($connexion));
+}
+
+if (pg_num_rows($idResult) == 0) {
+    die("Aucun conducteur trouvé avec cet email.");
+}
+
+$conducteur_row = pg_fetch_assoc($idResult);
+$id_utilisateur = $conducteur_row['idutilisateur'];
+
+// Récupération des contacts (tous les utilisateurs sauf l'admin)
+$contactsQuery = "SELECT idutilisateur, nom, prenom FROM utilisateur WHERE idutilisateur != 1";
 $contactsResult = pg_query($connexion, $contactsQuery);
 
 if (!$contactsResult) {
     die("Erreur lors de la récupération des contacts: " . pg_last_error($connexion));
 }
 
+// Récupération de l'administrateur
+$adminQuery = "SELECT idutilisateur AS idadm, nom AS nomadm, prenom AS prenomadm FROM utilisateur WHERE idutilisateur = 1";
+$adminResult = pg_query($connexion, $adminQuery);
 
+if (!$adminResult) {
+    die("Erreur lors de la récupération des informations de l'administrateur: " . pg_last_error($connexion));
+}
+
+$admin_row = pg_fetch_assoc($adminResult);
 ?>
 
 <!DOCTYPE html>
@@ -49,11 +84,21 @@ if (!$contactsResult) {
                         <td><?php echo htmlspecialchars($row['nom']); ?></td>
                         <td><?php echo htmlspecialchars($row['prenom']); ?></td>
                         <td>
-                            <a href="message.php?exp_id=305&dest_id=<?php echo urlencode($row['idutilisateur']); ?>&nom=<?php echo urlencode($row['nom']); ?>&prenom=<?php echo urlencode($row['prenom']); ?>&type=utilisateur" class="btn">Envoyer un message</a>
+                            <a href="message.php?exp_id=<?php echo urlencode($id_utilisateur); ?>&dest_id=<?php echo urlencode($row['idutilisateur']); ?>&nom=<?php echo urlencode($row['nom']); ?>&prenom=<?php echo urlencode($row['prenom']); ?>&type=utilisateur" class="btn">Envoyer un message</a>
                         </td>
                     </tr>
                 <?php endwhile; ?>
-                
+
+                <?php if ($admin_row) : ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($admin_row['nomadm']); ?></td>
+                        <td><?php echo htmlspecialchars($admin_row['prenomadm']); ?></td>
+                        <td>
+                            <a href="message.php?exp_id=<?php echo urlencode($id_utilisateur); ?>&dest_id=<?php echo urlencode($admin_row['idadm']); ?>&nom=<?php echo urlencode($admin_row['nomadm']); ?>&prenom=<?php echo urlencode($admin_row['prenomadm']); ?>&type=admin" class="btn">Envoyer un message à l'administrateur</a>
+                        </td>
+                    </tr>
+                <?php endif; ?>
+
             </tbody>
         </table>
     </main>

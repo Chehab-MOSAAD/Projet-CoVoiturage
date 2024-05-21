@@ -1,4 +1,5 @@
 <?php
+session_start();
 // Connexion à la base de données
 $host = "localhost";
 $port = "5433";
@@ -12,23 +13,22 @@ if (!$connexion) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $exp_id = intval($_POST['exp_id']);
-    $dest_id = intval($_POST['dest_id']);
-    $message = pg_escape_string($connexion, $_POST['message']);
-    $timestamp = date('Y-m-d H:i:s');
+    $expediteurid = $_POST['expediteurid'];
+    $destinataireid = $_POST['destinataireid'];
+    $message = $_POST['message'];
+    $dateenvoi = date('Y-m-d H:i:s');
+    $status = 'envoyé';
 
-    $query = "INSERT INTO messages (exp_id, dest_id, message, date) VALUES ($1, $2, $3, $4)";
-    $result = pg_query_params($connexion, $query, array($exp_id, $dest_id, $message, $timestamp));
+    $insertQuery = "INSERT INTO messagerie (expediteurid, destinataireid, message, dateenvoi, status) 
+                    VALUES ($1, $2, $3, $4, $5)";
+    $result = pg_query_params($connexion, $insertQuery, array($expediteurid, $destinataireid, $message, $dateenvoi, $status));
 
-    if (!$result) {
-        echo json_encode(array("status" => "error", "message" => pg_last_error($connexion)));
-        exit;
+    if ($result) {
+        echo json_encode(['status' => 'success']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Erreur lors de l\'envoi du message.']);
     }
-
-    echo json_encode(array("status" => "success", "message" => "Message envoyé avec succès"));
-    exit;
 } else {
-    echo json_encode(array("status" => "error", "message" => "Méthode de requête non valide"));
-    exit;
+    echo json_encode(['status' => 'error', 'message' => 'Méthode de requête invalide.']);
 }
 ?>
